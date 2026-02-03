@@ -1,0 +1,102 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: timescale/timescaledb:latest-pg15
+    container_name: plevee_postgres
+    environment:
+      POSTGRES_DB: plevee
+      POSTGRES_USER: plevee
+      POSTGRES_PASSWORD: dev_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U plevee" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: plevee_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ./plevee_backend
+    container_name: plevee_backend
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://plevee:dev_password@postgres:5432/plevee
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./plevee_backend:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  celery_worker:
+    build: ./plevee_backend
+    container_name: plevee_celery_worker
+    environment:
+      DATABASE_URL: postgresql://plevee:dev_password@postgres:5432/plevee
+      REDIS_URL: redis://redis:6379
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./plevee_backend:/app
+    command: celery -A app.celery_app worker --loglevel=info -Q strategies,market_data
+    restart: unless-stopped
+
+  celery_beat:
+    build: ./plevee_backend
+    container_name: plevee_celery_beat
+    environment:
+      DATABASE_URL: postgresql://plevee:dev_password@postgres:5432/plevee
+      REDIS_URL: redis://redis:6379
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./plevee_backend:/app
+    command: celery -A app.celery_app beat --loglevel=info
+    restart: unless-stopped
+
+  flower:
+    build: ./plevee_backend
+    container_name: plevee_flower
+    ports:
+      - "5555:5555"
+    environment:
+      CELERY_BROKER_URL: redis://redis:6379/0
+      CELERY_RESULT_BACKEND: redis://redis:6379/0
+    depends_on:
+      - redis
+      - celery_worker
+    volumes:
+      - ./plevee_backend:/app
+    command: celery -A app.celery_app flower --port=5555
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

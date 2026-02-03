@@ -1,0 +1,47 @@
+name: plevee_desktop
+description: Multi-asset automated trading platform
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # State Management
+  flutter_riverpod: ^2.6.1
+  
+  # HTTP Client
+  dio: ^5.7.0
+  
+  # Secure Storage
+  flutter_secure_storage: ^9.2.4
+  
+  # Charts
+  fl_chart: ^0.68.0
+  syncfusion_flutter_charts: ^25.2.7
+  
+  # Fonts
+  google_fonts: ^6.3.3
+  
+  # Window Management
+  window_manager: ^0.3.9
+  screen_retriever: ^0.1.9
+  
+  # Auto Update
+  updater: ^0.2.1
+  package_info_plus: ^8.1.2
+  path_provider: ^2.1.5
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  build_runner: ^2.4.14
+  freezed: ^2.5.8
+  json_serializable: ^6.9.5
+
+flutter:
+  uses-material-design: true

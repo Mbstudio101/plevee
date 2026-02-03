@@ -1,0 +1,49 @@
+
+
+
+creating a breath taking app with custom logo and desktop icon and a very good ui/ux design framless window for macos and windows. the app should be able to run in the background and notify the user of any changes in the market.
+
+App name is Plevee
+
+Build with flutter and dart 
+
+
+1. What is a trading bot?
+
+A trading bot is a software program that automates buying and selling financial assets like stocks and cryptocurrencies based on pre-defined strategies and rules.
+
+These automated systems can manage portfolios without human intervention, operating 24/7.
+
+
+
+Let's make a Bitcoin Trading bot
+
+We'll use investing-algorithm-framework in Python
+
+
+
+Step 1: Setup
+
+We need to specify how often our trading bot runs and which market data it's going to use
+
+
+
+Step 2: Trading Strategy
+
+We will implement a simple strategy that buys Bitcoin when there is a golden cross between a fast and slow-moving average
+
+
+
+Step 3: Backtesting
+
+We will test our strategy on historical data to see how it would have performed in the past Now that we have implemented our trading strategy, we can test it. To test our strategy, we will use the backtesting functionality of the investing algorithm framework.
+
+
+Step 4: Analyze the Backtest Results
+
+This trading strategy is profitable with a growth rate of 17% on its closed trades.
+
+
+Step 5: Deploy the Trading Bot
+
+Once we have found a profitable trading strategy, we can deploy the trading app in the cloud.
