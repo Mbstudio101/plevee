@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 
 /// Service for checking and installing app updates
 class UpdateService {
-  static const String updateCheckUrl = 'https://api.github.com/repos/YOUR_USERNAME/plevee/releases/latest';
+  static const String updateCheckUrl = 'https://api.github.com/repos/Mbstudio101/plevee/releases/latest';
   static const String currentVersion = '1.0.0';
   
   final Dio _dio = Dio();
