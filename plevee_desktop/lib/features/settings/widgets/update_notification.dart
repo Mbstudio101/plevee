@@ -66,7 +66,7 @@ class UpdateNotificationWidget extends ConsumerWidget {
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
-                ref.read(updateNotifierProvider.notifier).state = const UpdateState.idle();
+                ref.read(updateNotifierProvider.notifier).reset();
               },
               child: const Text('Later'),
             ),

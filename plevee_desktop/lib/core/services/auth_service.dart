@@ -1,5 +1,6 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/foundation.dart';
 import '../services/api_service.dart';
 import '../constants/api_constants.dart';
 
@@ -63,8 +64,8 @@ class AuthService extends StateNotifier<AuthState> {
     required String fullName,
   }) async {
     try {
-      print('🔵 Attempting sign up for: $email');
-      print('🔵 API URL: ${ApiConstants.baseUrl}${ApiConstants.auth}/signup');
+      debugPrint('🔵 Attempting sign up for: $email');
+      debugPrint('🔵 API URL: ${ApiConstants.baseUrl}${ApiConstants.auth}/signup');
       
       final response = await _apiService.post(
         '${ApiConstants.auth}/signup',
@@ -75,7 +76,7 @@ class AuthService extends StateNotifier<AuthState> {
         },
       );
 
-      print('✅ Sign up response received: ${response.statusCode}');
+      debugPrint('✅ Sign up response received: ${response.statusCode}');
       
       final accessToken = response.data['access_token'];
       final refreshToken = response.data['refresh_token'];
@@ -93,11 +94,11 @@ class AuthService extends StateNotifier<AuthState> {
         userEmail: email,
       );
 
-      print('✅ Sign up successful!');
+      debugPrint('✅ Sign up successful!');
       return {'success': true};
     } catch (e, stackTrace) {
-      print('❌ Sign up error: $e');
-      print('❌ Stack trace: $stackTrace');
+      debugPrint('❌ Sign up error: $e');
+      debugPrint('❌ Stack trace: $stackTrace');
       
       // Extract error message from DioException
       String errorMessage = 'Failed to create account. Please try again.';
@@ -120,7 +121,7 @@ class AuthService extends StateNotifier<AuthState> {
     required String password,
   }) async {
     try {
-      print('🔵 Attempting sign in for: $email');
+      debugPrint('🔵 Attempting sign in for: $email');
       
       final response = await _apiService.post(
         '${ApiConstants.auth}/signin',
@@ -130,7 +131,7 @@ class AuthService extends StateNotifier<AuthState> {
         },
       );
 
-      print('✅ Sign in response received: ${response.statusCode}');
+      debugPrint('✅ Sign in response received: ${response.statusCode}');
       
       final accessToken = response.data['access_token'];
       final refreshToken = response.data['refresh_token'];
@@ -148,11 +149,11 @@ class AuthService extends StateNotifier<AuthState> {
         userEmail: email,
       );
 
-      print('✅ Sign in successful!');
+      debugPrint('✅ Sign in successful!');
       return true;
     } catch (e, stackTrace) {
-      print('❌ Sign in error: $e');
-      print('❌ Stack trace: $stackTrace');
+      debugPrint('❌ Sign in error: $e');
+      debugPrint('❌ Stack trace: $stackTrace');
       return false;
     }
   }
@@ -165,11 +166,13 @@ class AuthService extends StateNotifier<AuthState> {
 }
 
 // Providers
-final apiServiceProvider = Provider<ApiService>((ref) => ApiService());
-
 final secureStorageProvider = Provider<FlutterSecureStorage>(
   (ref) => const FlutterSecureStorage(),
 );
+
+final apiServiceProvider = Provider<ApiService>((ref) {
+  return ApiService(ref.watch(secureStorageProvider));
+});
 
 final authServiceProvider = StateNotifierProvider<AuthService, AuthState>((ref) {
   return AuthService(

@@ -7,7 +7,7 @@ from fastapi.middleware.gzip import GZipMiddleware
 import uvicorn
 
 from app.core.database.session import engine, Base
-from app.api.routes import auth, portfolio, strategies, backtesting, trading, market_data, polymarket, webull
+from app.api.routes import auth, portfolio, strategies, backtesting, trading, market_data#, polymarket, webull
 
 # Create FastAPI app
 app = FastAPI(
@@ -37,8 +37,8 @@ app.include_router(strategies.router, prefix="/api/v1/strategies", tags=["Strate
 app.include_router(backtesting.router, prefix="/api/v1/backtesting", tags=["Backtesting"])
 app.include_router(trading.router, prefix="/api/v1/trading", tags=["Trading"])
 app.include_router(market_data.router, prefix="/api/v1/market-data", tags=["Market Data"])
-app.include_router(polymarket.router, prefix="/api/v1/polymarket", tags=["Polymarket"])
-app.include_router(webull.router, prefix="/api/v1/webull", tags=["Webull"])
+# app.include_router(polymarket.router, prefix="/api/v1/polymarket", tags=["Polymarket"])
+# app.include_router(webull.router, prefix="/api/v1/webull", tags=["Webull"])
 
 
 @app.on_event("startup")

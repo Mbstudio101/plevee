@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 /// Service for checking and installing app updates
 class UpdateService {
   static const String updateCheckUrl = 'https://api.github.com/repos/Mbstudio101/plevee/releases/latest';
-  static const String currentVersion = '1.0.0';
+  static const String currentVersion = '1.0.1';
   
   final Dio _dio = Dio();
   
@@ -81,7 +81,7 @@ class UpdateService {
     await Process.run('hdiutil', ['attach', dmgPath]);
     
     // Copy app to Applications
-    final volumeName = 'Plevee';
+    const volumeName = 'Plevee';
     await Process.run('cp', [
       '-R',
       '/Volumes/$volumeName/Plevee.app',

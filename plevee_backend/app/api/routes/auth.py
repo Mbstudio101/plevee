@@ -10,7 +10,8 @@ from app.core.auth.jwt import (
     verify_password,
     get_password_hash,
     create_access_token,
-    create_refresh_token
+    create_refresh_token,
+    decode_token
 )
 
 router = APIRouter()
@@ -98,4 +99,50 @@ async def sign_in(request: SignInRequest, db: Session = Depends(get_db)):
     return TokenResponse(
         access_token=access_token,
         refresh_token=refresh_token
+    )
+
+
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
+
+@router.post("/refresh", response_model=TokenResponse)
+async def refresh_token(request: RefreshRequest, db: Session = Depends(get_db)):
+    """Refresh access token"""
+    # Verify refresh token
+    payload = decode_token(request.refresh_token)
+    if not payload or payload.get("type") != "refresh":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid refresh token"
+        )
+    
+    user_id = payload.get("sub")
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid refresh token"
+        )
+        
+    # Check if user still exists
+    user = db.query(User).filter(User.id == int(user_id)).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found"
+        )
+        
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Account is inactive"
+        )
+    
+    # Create new tokens
+    access_token = create_access_token(data={"sub": str(user.id)})
+    new_refresh_token = create_refresh_token(data={"sub": str(user.id)})
+    
+    return TokenResponse(
+        access_token=access_token,
+        refresh_token=new_refresh_token
     )
